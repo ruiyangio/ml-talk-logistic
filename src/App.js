@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import Reveal from 'reveal.js';
 import MathJax from 'react-mathjax2';
-import C3Chart from 'react-c3js';
+import C3Chart from './C3Chart';
 import 'c3/c3.css';
 import '../node_modules/reveal.js/css/reveal.css';
-import '../node_modules/reveal.js/css/theme/sky.css';
+import '../node_modules/reveal.js/css/theme/serif.css';
 import './App.css';
+
+const MATHJAX_CDN_URL =
+  'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=AM_HTMLorMML';
 
 const logitModel = 'h_theta(x) = g(theta^TX) = 1/(1+e^(-theta^TX))';
 const sigmoidChartConfig = makeFunctionLineChart(
@@ -45,6 +48,11 @@ class App extends Component {
       width: '100%',
       height: '100%'
     });
+
+    // Temp workaround for the wrong chart size
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 200);
   }
 
   render() {
@@ -55,7 +63,7 @@ class App extends Component {
             <header>
               <h2>Learning session: Logistic Regression</h2>
             </header>
-            <div className="demo-chart demo-chart--half demo-chart__center">
+            <div className="demo-chart demo-chart__half demo-chart__center">
               <C3Chart
                 title={sigmoidChartConfig.title}
                 data={sigmoidChartConfig.data}
@@ -64,15 +72,30 @@ class App extends Component {
             </div>
           </section>
           <section>
+            <h2>Regression Analysis</h2>
             <div>
-              <MathJax.Context input="ascii">
+              <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
                 <div>
                   <MathJax.Node>{logitModel}</MathJax.Node>
                 </div>
               </MathJax.Context>
             </div>
           </section>
-          <section>S3</section>
+          <section>
+            <h2>Generalized Linear Model</h2>
+          </section>
+          <section>
+            <h2>Why Sigmoid</h2>
+          </section>
+          <section>
+            <h2>Gradient descent</h2>
+          </section>
+          <section>
+            <h2>Implementation in Vector space</h2>
+          </section>
+          <section>
+            <h2>Demo</h2>
+          </section>
         </div>
       </div>
     );
