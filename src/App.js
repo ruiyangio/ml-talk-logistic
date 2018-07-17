@@ -4,19 +4,22 @@ import MathJax from 'react-mathjax2';
 import C3Chart from './C3Chart';
 import 'c3/c3.css';
 import '../node_modules/reveal.js/css/reveal.css';
-import '../node_modules/reveal.js/css/theme/serif.css';
+import '../node_modules/reveal.js/css/theme/sky.css';
 import './App.css';
 
 const MATHJAX_CDN_URL =
   'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=AM_HTMLorMML';
 
+const regression = 'y~~f(X,beta)';
+const conditionalExpectation = 'E(Y|X) = f(X,beta)';
 const logitModel = 'h_theta(x) = g(theta^TX) = 1/(1+e^(-theta^TX))';
+const generalizedModel = 'E(Y|X)=mu=g^-1(Xbeta)';
 const sigmoidChartConfig = makeFunctionLineChart(
   -4.5,
   4.5,
   0.5,
   v => (1 / (1 + Math.exp(-v))).toFixed(2),
-  'Sigmoid'
+  ''
 );
 
 function makeFunctionLineChart(min, max, step, fn, title) {
@@ -49,10 +52,12 @@ class App extends Component {
       height: '100%'
     });
 
-    // Temp workaround for the wrong chart size
-    setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 200);
+    document.addEventListener('keydown', e => {
+      if (e.code === 'ArrowRight' || e.code === 'ArrowDown') {
+        // Temp workaround for the wrong chart size
+        window.dispatchEvent(new Event('resize'));
+      }
+    });
   }
 
   render() {
@@ -63,32 +68,77 @@ class App extends Component {
             <header>
               <h2>Learning session: Logistic Regression</h2>
             </header>
-            <div className="demo-chart demo-chart__half demo-chart__center">
-              <C3Chart
-                title={sigmoidChartConfig.title}
-                data={sigmoidChartConfig.data}
-                tooltip={sigmoidChartConfig.tooltip}
-              />
+          </section>
+          <section>
+            <header>
+              <h3>Regression Analysis</h3>
+            </header>
+            <div className="fragment" data-fragment-index="0">
+              New data regress towards mean
+            </div>
+            <br />
+            <div className="fragment" data-fragment-index="1">
+              <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                <div>
+                  <MathJax.Node>{regression}</MathJax.Node>
+                </div>
+              </MathJax.Context>
+            </div>
+            <br />
+            <div className="fragment" data-fragment-index="2">
+              <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                <div>
+                  <MathJax.Node>{conditionalExpectation}</MathJax.Node>
+                </div>
+              </MathJax.Context>
+            </div>
+            <br />
+            <div className="fragment" data-fragment-index="3">
+              Given a set observations, what's the expected value of response
+              variable?
             </div>
           </section>
           <section>
-            <h2>Regression Analysis</h2>
-            <div>
+            <h3>Generalized Linear Model</h3>
+            <div className="fragment" data-fragment-index="0">
+              <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                <div>
+                  <MathJax.Node>{generalizedModel}</MathJax.Node>
+                </div>
+              </MathJax.Context>
+            </div>
+            <br />
+            <div className="fragment" data-fragment-index="1">
+              <div>
+                Y is from a particular distribution in the exponential family
+              </div>
+            </div>
+          </section>
+          <section>
+            <h3>Logistic Regression</h3>
+            <section>
               <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
                 <div>
                   <MathJax.Node>{logitModel}</MathJax.Node>
                 </div>
               </MathJax.Context>
-            </div>
-          </section>
-          <section>
-            <h2>Generalized Linear Model</h2>
-          </section>
-          <section>
-            <h2>Why Sigmoid</h2>
-          </section>
-          <section>
-            <h2>Gradient descent</h2>
+            </section>
+            <section>
+              <h4>Sigmoid</h4>
+              <div className="demo-chart demo-chart__half demo-chart__center">
+                <C3Chart
+                  title={sigmoidChartConfig.title}
+                  data={sigmoidChartConfig.data}
+                  tooltip={sigmoidChartConfig.tooltip}
+                />
+              </div>
+            </section>
+            <section>
+              <h4>Cross Entropy Cost function</h4>
+            </section>
+            <section>
+              <h4>Gradient descent</h4>
+            </section>
           </section>
           <section>
             <h2>Implementation in Vector space</h2>
