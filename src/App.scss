@@ -1,3 +1,5 @@
+@import 'colors';
+
 .demo {
   @media screen and (max-width: 1300px) {
     section {
@@ -10,7 +12,7 @@
   }
 
   .demo-chart {
-    background: white;
+    background: $white;
 
     &.demo-chart__half {
       width: 50%;

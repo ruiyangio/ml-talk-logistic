@@ -6,6 +6,7 @@ import 'c3/c3.css';
 import '../node_modules/reveal.js/css/reveal.css';
 import '../node_modules/reveal.js/css/theme/sky.css';
 import './App.css';
+import eggImage from './egg.jpg';
 
 const MATHJAX_CDN_URL =
   'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=AM_HTMLorMML';
@@ -18,6 +19,12 @@ const generalizedModel = 'E(Y|X)=f(X,beta)=mu=g^-1(Xbeta)';
 const linkFunction = 'Xbeta = g(mu)';
 const beachExample = 'P(go|temperature) = p, P(notgo|temperature) = 1 - p';
 const logOdds = 'ln(p/(1-p)) = temperaturebeta';
+const sigmoid = 'S(x) = e^x / (e^x + 1) = 1 / (1 + e^-x)';
+const sigmoidPdfInt =
+  'F(x;mu;s) = intf(x;mu;s)dx = inte^(-(x-mu)/s)/(s*(1+e^(-(x-mu)/s))^2)dx = 1/(1 + e^(-(x-mu)/s))';
+const sigmoidInt = 'intS(x)dx = ln(1+e^x)';
+const sigmoidDerivative =
+  "S^'(x) = -(1+e^-x)^-2*(-e^-x) = 1/(1+e^-x)*(1-1/(1+e^-x)) = S(x)*(1-S(x))";
 const sigmoidChartConfig = makeFunctionLineChart(
   -4.5,
   4.5,
@@ -135,6 +142,9 @@ class App extends Component {
                 </div>
               </div>
             </section>
+            <section>
+              <img src={eggImage} alt="egg" />
+            </section>
           </section>
           <section>
             <h3>Logistic Regression</h3>
@@ -182,9 +192,48 @@ class App extends Component {
                   tooltip={sigmoidChartConfig.tooltip}
                 />
               </div>
+              <br />
+              <div>
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{sigmoid}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
             </section>
             <section>
-              <h4>Cross Entropy Cost function</h4>
+              <div>
+                <div>
+                  Cumulative distribution function of Logistic distribution
+                </div>
+                <br />
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{sigmoidPdfInt}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
+              <br />
+              <div className="fragment" data-fragment-index="0">
+                <div>Softplus function</div>
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{sigmoidInt}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
+              <br />
+              <div className="fragment" data-fragment-index="1">
+                <div>Derivative of sigmoid function</div>
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{sigmoidDerivative}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
+            </section>
+            <section>
+              <h4>Cost function</h4>
             </section>
             <section>
               <h4>Gradient descent</h4>
