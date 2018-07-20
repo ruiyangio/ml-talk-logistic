@@ -2,11 +2,16 @@ import React, { Component } from 'react';
 import Reveal from 'reveal.js';
 import MathJax from 'react-mathjax2';
 import C3Chart from './C3Chart';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { monokaiSublime } from 'react-syntax-highlighter/styles/hljs';
 import 'c3/c3.css';
 import '../node_modules/reveal.js/css/reveal.css';
 import '../node_modules/reveal.js/css/theme/sky.css';
 import './App.css';
 import eggImage from './egg.jpg';
+import derivativeImage from './derivative.gif';
+import objFImage from './f.png';
+import objD1Image from './1d.png';
 
 const MATHJAX_CDN_URL =
   'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=AM_HTMLorMML';
@@ -25,6 +30,19 @@ const sigmoidPdfInt =
 const sigmoidInt = 'intS(x)dx = ln(1+e^x)';
 const sigmoidDerivative =
   "S^'(x) = -(1+e^-x)^-2*(-e^-x) = 1/(1+e^-x)*(1-1/(1+e^-x)) = S(x)*(1-S(x))";
+const massFunction1 = 'P(y=1|Xtheta) = h_theta(X)';
+const massFunction2 = 'P(y=0|Xtheta) = 1-h_theta(X)';
+const massFunction = 'P(y|Xtheta) = h_theta(X)^y*(1-h_theta(X))^y';
+const massFunctionSpread =
+  '= prod_ih_theta(x_i)^(y_i)*(1-h_theta(x_i)^(1-y_i))';
+const logProb =
+  'll = 1/nsum_i^ny_ilog(h_theta(x_i))+(1-y_i)*log(1-h_theta(x_i))';
+const gradientAsc = 'theta_n = theta_(n-1) + alpha*(partialll)/(partialtheta)';
+const gradient =
+  'gradf(x_1, x_2,...,x_3) = [(partialf)/(partialx_1), (partialf)/(partialx_2), ...,(partialf)/(partialx_n)]';
+const gradientAwd = '(partialll)/(partialtheta) = sumylog(h) + (1-y)log(1-h)';
+const gradientAwd2 = "= sumxy1/hh^' + x(1-y)1/(1-h)*(-h^')";
+const gradientAwd3 = '= X^T(Y-(1/(1+e^-(X*theta))))';
 const sigmoidChartConfig = makeFunctionLineChart(
   -4.5,
   4.5,
@@ -84,30 +102,35 @@ class App extends Component {
             <header>
               <h3>Regression Analysis</h3>
             </header>
-            <div className="fragment" data-fragment-index="0">
-              New data regress towards mean
-            </div>
-            <br />
-            <div className="fragment" data-fragment-index="1">
-              <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
-                <div>
-                  <MathJax.Node>{regression}</MathJax.Node>
-                </div>
-              </MathJax.Context>
-            </div>
-            <br />
-            <div className="fragment" data-fragment-index="2">
-              <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
-                <div>
-                  <MathJax.Node>{conditionalExpectation}</MathJax.Node>
-                </div>
-              </MathJax.Context>
-            </div>
-            <br />
-            <div className="fragment" data-fragment-index="3">
-              Given a set observations, what's the expected value of response
-              variable?
-            </div>
+            <section>
+              <div className="fragment" data-fragment-index="0">
+                New data regress towards mean
+              </div>
+              <br />
+              <div className="fragment" data-fragment-index="1">
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{regression}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
+              <br />
+              <div className="fragment" data-fragment-index="2">
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{conditionalExpectation}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
+              <br />
+              <div className="fragment" data-fragment-index="3">
+                Given a set observations, what's the expected value of response
+                variable?
+              </div>
+            </section>
+            <section>
+              <img src={eggImage} alt="egg" />
+            </section>
           </section>
           <section>
             <h3>Generalized Linear Model</h3>
@@ -141,9 +164,6 @@ class App extends Component {
                   Y is from a particular distribution in the exponential family
                 </div>
               </div>
-            </section>
-            <section>
-              <img src={eggImage} alt="egg" />
             </section>
           </section>
           <section>
@@ -186,11 +206,7 @@ class App extends Component {
             <section>
               <h4>Sigmoid</h4>
               <div className="demo-chart demo-chart__half demo-chart__center">
-                <C3Chart
-                  title={sigmoidChartConfig.title}
-                  data={sigmoidChartConfig.data}
-                  tooltip={sigmoidChartConfig.tooltip}
-                />
+                <C3Chart {...sigmoidChartConfig} />
               </div>
               <br />
               <div>
@@ -233,14 +249,147 @@ class App extends Component {
               </div>
             </section>
             <section>
-              <h4>Cost function</h4>
+              <h4>Learning the model</h4>
+              <div className="fragment" data-fragment-index="0">
+                <div>Probability Mass function</div>
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{massFunction1}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{massFunction2}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
+              <br />
+              <div className="fragment" data-fragment-index="1">
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{massFunction}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
+              <br />
+              <div className="fragment" data-fragment-index="2">
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{massFunctionSpread}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
+              <br />
+              <div className="fragment" data-fragment-index="3">
+                <div>Reward function</div>
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{logProb}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
             </section>
             <section>
-              <h4>Gradient descent</h4>
+              <h4>Derivative</h4>
+              <div className="fragment" data-fragment-index="0">
+                <img src={derivativeImage} alt="derivative" />
+              </div>
+            </section>
+            <section>
+              <h4>Gradient</h4>
+              <div className="fragment" data-fragment-index="0">
+                <div>A vector of first order partial derivative</div>
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{gradient}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
+              <br />
+              <div className="fragment" data-fragment-index="1">
+                Points to the direction of largest increase
+              </div>
+            </section>
+            <section>
+              <h4>Maximize with gradient ascent</h4>
+              <div className="fragment" data-fragment-index="0">
+                <div>Gradient of reward function</div>
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{gradientAwd}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
+              <div className="fragment" data-fragment-index="1">
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{gradientAwd2}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
+              <div className="fragment" data-fragment-index="2">
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{gradientAwd3}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
+              <br />
+              <div className="fragment" data-fragment-index="3">
+                <div>Iteratively update unknown parameters</div>
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{gradientAsc}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
+            </section>
+            <section>
+              <div>
+                <div>Object function</div>
+                <img
+                  src={objFImage}
+                  alt="object function"
+                  className="demo-img__quarter"
+                />
+              </div>
+            </section>
+            <section>
+              <div>
+                <div>Derivative</div>
+                <img
+                  src={objD1Image}
+                  alt="derivative"
+                  className="demo-img__quarter"
+                />
+              </div>
             </section>
           </section>
           <section>
-            <h2>Implementation in Vector space</h2>
+            <h2>Implementation</h2>
+            <SyntaxHighlighter
+              language="python"
+              style={monokaiSublime}
+              wrapLines={true}
+            >
+              {`
+                  def sigmoid(self, x):
+                    return 1.0 / (1 + np.exp(-x))
+
+                  def fit(self, x, y):
+                      self.w = np.zeros(x.shape[1])
+                      for i in range(self.max_iteration):
+                          scores = x.dot(self.w)
+                          y_pred = self.sigmoid(scores)
+                          error = y - y_pred
+                          gradient = x.T.dot(error)
+                          self.w += self.learning_rate * gradient
+                  
+                  def predict(self, x):
+                      scores = x.dot(self.w)
+                      return np.round(self.sigmoid(scores))
+                  `}
+            </SyntaxHighlighter>
           </section>
           <section>
             <h2>Demo</h2>

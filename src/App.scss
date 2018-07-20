@@ -9,6 +9,11 @@
 
   &.reveal {
     position: absolute;
+
+    img.demo-img__quarter {
+      width: 35%;
+      height: 35%;
+    }
   }
 
   .demo-chart {
