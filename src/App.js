@@ -34,15 +34,23 @@ const massFunction1 = 'P(y=1|Xtheta) = h_theta(X)';
 const massFunction2 = 'P(y=0|Xtheta) = 1-h_theta(X)';
 const massFunction = 'P(y|Xtheta) = h_theta(X)^y*(1-h_theta(X))^y';
 const massFunctionSpread =
-  '= prod_ih_theta(x_i)^(y_i)*(1-h_theta(x_i)^(1-y_i))';
+  'P(y|Xtheta) = prod_ih_theta(x_i)^(y_i)*(1-h_theta(x_i)^(1-y_i))';
 const logProb =
   'll = 1/nsum_i^ny_ilog(h_theta(x_i))+(1-y_i)*log(1-h_theta(x_i))';
+const logProb2 =
+  '= 1/nsum_i^ny_ilog((h_theta(x_i))/(1-h_theta(x_i)))+log(1-h_theta(x_i))';
 const gradientAsc = 'theta_n = theta_(n-1) + alpha*(partialll)/(partialtheta)';
 const gradient =
   'gradf(x_1, x_2,...,x_3) = [(partialf)/(partialx_1), (partialf)/(partialx_2), ...,(partialf)/(partialx_n)]';
-const gradientAwd = '(partialll)/(partialtheta) = sumylog(h) + (1-y)log(1-h)';
-const gradientAwd2 = "= sumxy1/hh^' + x(1-y)1/(1-h)*(-h^')";
-const gradientAwd3 = '= X^T(Y-(1/(1+e^-(X*theta))))';
+const logProb3 = '1/nsum_i^ny_iXtheta-log(1+e^(Xtheta))';
+const gradientAwd =
+  '(partialll)/(partialtheta) = 1/nsumyX - X*(e^(Xtheta)/(1+e^Xtheta))';
+const gradientAwd2 = '= X^T(Y-(1/(1+e^-(X*theta))))';
+const multinomial1 = 'P(y=1|X) = e^(Xtheta_1)/(1+sum_(k=1)^(K-1)e^(Xtheta_k))';
+const multinomial2 = 'P(y=2|X) = e^(Xtheta_2)/(1+sum_(k=1)^(K-1)e^(Xtheta_k))';
+const multinomial3 =
+  'P(y=K-1|X) = e^(Xtheta_(K-1))/(1+sum_(k=1)^(K-1)e^(Xtheta_k))';
+const multinomial4 = 'P(y=K|X) = 1/(1+sum_(k=1)^(K-1)e^(Xtheta_k))';
 const sigmoidChartConfig = makeFunctionLineChart(
   -4.5,
   4.5,
@@ -103,8 +111,9 @@ class App extends Component {
               <h3>Regression Analysis</h3>
             </header>
             <section>
-              <div className="fragment" data-fragment-index="0">
-                New data regress towards mean
+              <div>
+                A biological phenomenon that the heights of descendants of tall
+                ancestors tend to regress down towards a normal average.
               </div>
               <br />
               <div className="fragment" data-fragment-index="1">
@@ -288,6 +297,13 @@ class App extends Component {
                   </div>
                 </MathJax.Context>
               </div>
+              <div className="fragment" data-fragment-index="4">
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{logProb2}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
             </section>
             <section>
               <h4>Derivative</h4>
@@ -311,31 +327,30 @@ class App extends Component {
               </div>
             </section>
             <section>
-              <h4>Maximize with gradient ascent</h4>
               <div className="fragment" data-fragment-index="0">
-                <div>Gradient of reward function</div>
+                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                  <div>
+                    <MathJax.Node>{logProb3}</MathJax.Node>
+                  </div>
+                </MathJax.Context>
+              </div>
+              <div className="fragment" data-fragment-index="1">
+                <div>Partial derivative</div>
                 <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
                   <div>
                     <MathJax.Node>{gradientAwd}</MathJax.Node>
                   </div>
                 </MathJax.Context>
               </div>
-              <div className="fragment" data-fragment-index="1">
+              <div className="fragment" data-fragment-index="2">
                 <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
                   <div>
                     <MathJax.Node>{gradientAwd2}</MathJax.Node>
                   </div>
                 </MathJax.Context>
               </div>
-              <div className="fragment" data-fragment-index="2">
-                <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
-                  <div>
-                    <MathJax.Node>{gradientAwd3}</MathJax.Node>
-                  </div>
-                </MathJax.Context>
-              </div>
               <br />
-              <div className="fragment" data-fragment-index="3">
+              <div className="fragment" data-fragment-index="4">
                 <div>Iteratively update unknown parameters</div>
                 <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
                   <div>
@@ -378,11 +393,12 @@ class App extends Component {
 
                   def fit(self, x, y):
                       self.w = np.zeros(x.shape[1])
+                      n_sample = x.shape[0]
                       for i in range(self.max_iteration):
                           scores = x.dot(self.w)
                           y_pred = self.sigmoid(scores)
                           error = y - y_pred
-                          gradient = x.T.dot(error)
+                          gradient = 1/n_sample*x.T.dot(error)
                           self.w += self.learning_rate * gradient
                   
                   def predict(self, x):
@@ -392,7 +408,40 @@ class App extends Component {
             </SyntaxHighlighter>
           </section>
           <section>
-            <h2>Demo</h2>
+            <h2>Multinomial Logistic Regression</h2>
+            <div>K outcome instead of 1/0 outcome</div>
+            <div>
+              Take a pivot class and do K-1 Binomial Logistic Regression
+            </div>
+            <div
+              className="fragment"
+              data-fragment-index="0"
+              style={{ 'font-size': '1.5vw' }}
+            >
+              <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                <div>
+                  <MathJax.Node>{multinomial1}</MathJax.Node>
+                </div>
+              </MathJax.Context>
+              <br />
+              <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                <div>
+                  <MathJax.Node>{multinomial2}</MathJax.Node>
+                </div>
+              </MathJax.Context>
+              <br />
+              <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                <div>
+                  <MathJax.Node>{multinomial3}</MathJax.Node>
+                </div>
+              </MathJax.Context>
+              <div>...</div>
+              <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
+                <div>
+                  <MathJax.Node>{multinomial4}</MathJax.Node>
+                </div>
+              </MathJax.Context>
+            </div>
           </section>
         </div>
       </div>
