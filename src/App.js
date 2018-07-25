@@ -59,6 +59,42 @@ const sigmoidChartConfig = makeFunctionLineChart(
   ''
 );
 
+const accuracyChart = {
+  title: { text: 'Sentiment Model Accuracy' },
+  data: {
+    columns: [
+      ['MNB', 86, 79, 81],
+      ['My Logistic', 87, 80, 80],
+      ['sklearn Logistic', 89, 82, 83],
+      ['SVM', 91, 82, 82]
+    ],
+    type: 'bar'
+  },
+  bar: {
+    width: {
+      ratio: 0.5
+    }
+  },
+  axis: {
+    x: {
+      type: 'category',
+      categories: [
+        'IMDB Review Bi-gram feature',
+        'Twitter Sentiment Bi-gram',
+        'Overall Bi-gram'
+      ]
+    }
+  },
+  tooltip: {
+    show: true,
+    format: {
+      value: value => {
+        return `${value} %`;
+      }
+    }
+  }
+};
+
 function makeFunctionLineChart(min, max, step, fn, title) {
   const x = [];
   for (let i = min; i <= max; i += step) {
@@ -441,6 +477,46 @@ class App extends Component {
                   <MathJax.Node>{multinomial4}</MathJax.Node>
                 </div>
               </MathJax.Context>
+            </div>
+          </section>
+          <section>
+            <div>Sentiment Analysis example</div>
+            <div>
+              <C3Chart {...accuracyChart} />
+            </div>
+            <div>Training accuracy and speed on the whole data set</div>
+            <div style={{ 'font-size': '1.2vw' }}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>Accuracy</th>
+                    <th>Training Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>My Logistic</td>
+                    <td>80%</td>
+                    <td>10</td>
+                  </tr>
+                  <tr>
+                    <td>Sklearn Logistic</td>
+                    <td>80%</td>
+                    <td>10</td>
+                  </tr>
+                  <tr>
+                    <td>Multinomial Naive Bayes</td>
+                    <td>80%</td>
+                    <td>10</td>
+                  </tr>
+                  <tr>
+                    <td>Support Vector Machine</td>
+                    <td>80%</td>
+                    <td>10</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </section>
         </div>
