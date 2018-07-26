@@ -63,10 +63,10 @@ const accuracyChart = {
   title: { text: 'Sentiment Model Accuracy' },
   data: {
     columns: [
-      ['MNB', 86, 79, 81],
-      ['My Logistic', 87, 80, 80],
-      ['sklearn Logistic', 89, 82, 83],
-      ['SVM', 91, 82, 82]
+      ['My Logistic', 87, 72, 70.7],
+      ['sklearn Logistic', 89, 82.5, 82.5],
+      ['MNB', 86, 80.7, 80.6],
+      ['SVM', 91, 81.6, 81.7]
     ],
     type: 'bar'
   },
@@ -180,6 +180,10 @@ class App extends Component {
           <section>
             <h3>Generalized Linear Model</h3>
             <section>
+              <div>
+                Linear combination + transformation function &#10132;
+                non-continuous prediction
+              </div>
               <div className="fragment" data-fragment-index="0">
                 <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
                   <div>
@@ -484,36 +488,41 @@ class App extends Component {
             <div>
               <C3Chart {...accuracyChart} />
             </div>
-            <div>Training accuracy and speed on the whole data set</div>
+            <br />
             <div style={{ 'font-size': '1.2vw' }}>
+              <div>
+                Training accuracy and speed on the whole data set(IMDB +
+                Twitter)
+              </div>
+              <div>1145k Train cases and 505k Validation cases</div>
               <table>
                 <thead>
                   <tr>
                     <th>Model</th>
-                    <th>Accuracy</th>
+                    <th>Accuracy %</th>
                     <th>Training Time</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>My Logistic</td>
-                    <td>80%</td>
-                    <td>10</td>
+                    <td>My Logistic(10000 iteration)</td>
+                    <td>70.7%</td>
+                    <td>101 min</td>
                   </tr>
                   <tr>
                     <td>Sklearn Logistic</td>
-                    <td>80%</td>
-                    <td>10</td>
+                    <td>82.5%</td>
+                    <td>3.3 min</td>
                   </tr>
                   <tr>
                     <td>Multinomial Naive Bayes</td>
-                    <td>80%</td>
-                    <td>10</td>
+                    <td>80.6%</td>
+                    <td>2 min</td>
                   </tr>
                   <tr>
                     <td>Support Vector Machine</td>
-                    <td>80%</td>
-                    <td>10</td>
+                    <td>81.7%</td>
+                    <td>2.6 min</td>
                   </tr>
                 </tbody>
               </table>
