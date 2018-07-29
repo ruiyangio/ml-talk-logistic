@@ -298,7 +298,6 @@ class App extends Component {
               </div>
             </section>
             <section>
-              <h4>Learning the model</h4>
               <div className="fragment" data-fragment-index="0">
                 <div>Probability Mass function</div>
                 <MathJax.Context input="ascii" script={MATHJAX_CDN_URL}>
@@ -348,7 +347,11 @@ class App extends Component {
             <section>
               <h4>Derivative</h4>
               <div className="fragment" data-fragment-index="0">
-                <img src={derivativeImage} alt="derivative" />
+                <img
+                  src={derivativeImage}
+                  alt="derivative"
+                  style={{ width: '55%' }}
+                />
               </div>
             </section>
             <section>

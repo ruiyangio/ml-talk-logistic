@@ -2,6 +2,7 @@
   "name": "ml-talk-logistic",
   "version": "0.1.0",
   "private": true,
+  "homepage": "./",
   "dependencies": {
     "c3": "^0.6.2",
     "husky": "^0.14.3",
